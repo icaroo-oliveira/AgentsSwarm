@@ -1,217 +1,216 @@
-# Agent Swarm - Sistema Multi-Agente com Agno
+# Agent Swarm - Multi-Agent System with Agno
 
-## Descrição
+## Description
 
-Este projeto implementa um sistema de agentes inteligentes (Agent Swarm) usando o framework Agno. O sistema processa mensagens de usuários através de três tipos de agentes especializados: Router Agent, Knowledge Agent e Customer Support Agent. A aplicação é containerizada com Docker e expõe uma API REST para interação.
+This project implements an intelligent agent system (Agent Swarm) using the Agno framework. The system processes user messages through three specialized agent types: Router Agent, Knowledge Agent, and Customer Support Agent. The application is containerized with Docker and exposes a REST API for interaction.
 
-## Arquitetura do Agent Swarm
+## Agent Swarm Architecture
 
-### Agentes Implementados
+### Implemented Agents
 
 1. **Router Agent**
-   - **Função**: Ponto de entrada principal para todas as mensagens.
-   - **Responsabilidades**: Analisa o conteúdo da mensagem e decide qual agente especializado deve processá-la.
-   - **Decisões**: Baseadas em análise de intenção e contexto da mensagem.
+   - **Function**: Main entry point for all messages.
+   - **Responsibilities**: Analyzes message content and decides which specialized agent should handle it.
+   - **Decisions**: Based on intent and context analysis.
 
-2. **Knowledge Agent** 
-   - **Função**: Responde perguntas sobre produtos e serviços da InfinitePay.
-   - **Tecnologia**: Usa Retrieval Augmented Generation (RAG) para respostas baseadas em dados do site oficial.
-   - **Ferramentas**: Busca web para perguntas gerais, RAG para conhecimento específico.
+2. **Knowledge Agent**
+   - **Function**: Answers questions about InfinitePay products and services.
+   - **Technology**: Uses Retrieval Augmented Generation (RAG) for responses based on official website data.
+   - **Tools**: Web search for general questions, RAG for specific knowledge.
 
 3. **Customer Support Agent**
-   - **Função**: Fornece suporte ao cliente, recuperando dados específicos do usuário.
-   - **Ferramentas**: Duas ferramentas implementadas para consultar perfil e transações do usuário.
-   - **Banco de Dados**: SQLite com dados mockados para simulação.
+   - **Function**: Provides customer support by retrieving specific user data.
+   - **Tools**: Two implemented tools to query user profile and transactions.
+   - **Database**: SQLite with mocked data for simulation.
 
-### Fluxo de Processamento de Mensagem
+### Message Processing Flow
 
-1. **Recebimento**: API recebe POST em `/chat` com JSON contendo `message` e `user_id`.
-2. **Roteamento**: Router Agent analisa a mensagem e seleciona o agente apropriado.
-3. **Processamento**: Agente selecionado executa sua lógica (RAG, consultas DB, etc.).
-4. **Resposta**: Sistema retorna JSON com resposta, agente usado, confiança e metadados.
-5. **Memória**: Dados de conversa são armazenados para contexto futuro.
+1. **Reception**: API receives POST to `/chat` with JSON containing `message` and `user_id`.
+2. **Routing**: Router Agent analyzes the message and selects the appropriate agent.
+3. **Processing**: Selected agent executes its logic (RAG, DB queries, etc.).
+4. **Response**: System returns JSON with response, used agent, confidence, and metadata.
+5. **Memory**: Conversation data is stored for future context.
 
 ### Design Choices
 
-- **Framework Agno**: Escolhido por sua simplicidade em criar agentes e integrações com LLMs.
-- **FastAPI**: Para API REST rápida e documentada automaticamente.
-- **ChromaDB**: Vector store leve e eficiente para RAG.
-- **Docker**: Containerização para portabilidade e isolamento.
-- **SQLite**: Banco simples para dados mockados de usuários.
+- **Agno Framework**: Chosen for simplicity in creating agents and LLM integrations.
+- **FastAPI**: For fast, automatically documented REST API.
+- **ChromaDB**: Lightweight and efficient vector store for RAG.
+- **Docker**: Containerization for portability and isolation.
+- **SQLite**: Simple database for mocked user data.
 
-## Como Construir, Configurar e Executar
+## How to Build, Configure, and Run
 
-### Pré-requisitos
+### Prerequisites
 
-- Docker e Docker Compose instalados
-- Chave da API Google Gemini (gratuita, para modelos de LLM) (aistudio.google.com/app/apikey)
+- Docker and Docker Compose installed
+- Google Gemini API key (free, for LLM models) (aistudio.google.com/app/apikey)
 
-### Configuração
+### Configuration
 
-1. **Clone o repositório**:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/icaro-oliveira/MultiAgent.git
    cd MultiAgent
    ```
 
-2. **Configure variáveis de ambiente**:
-   Crie um arquivo `.env` na raiz do projeto:
+2. **Configure environment variables**:
+   Create a `.env` file in the project root:
    ```
-   GOOGLE_API_KEY=sua_chave_aqui
+   GOOGLE_API_KEY=your_key_here
    LOG_LEVEL=INFO
    ```
-   **Exponha a variável de ambiente**
-   setx GOOGLE_API_KEY sua_chave_aqui
+   **Expose the environment variable**
+   setx GOOGLE_API_KEY your_key_here
 
-3. **Popule a base de conhecimento** (para Knowledge Agent):
+3. **Populate the knowledge base** (for Knowledge Agent):
    ```bash
    python src/data/populate_kb.py
    ```
 
-4. **Configure o banco de dados de usuários** (para Customer Support Agent):
-   O script `src/config/setup_db.py` cria tabelas e insere dados mockados automaticamente ao iniciar a aplicação. Se quiser executar manualmente:
+4. **Configure the user database** (for Customer Support Agent):
+   The `src/config/setup_db.py` script creates tables and inserts mocked data automatically when starting the application. If you want to run manually:
    ```bash
    python -c "from src.config.setup_db import setup_mock_data; setup_mock_data()"
    ```
 
-### Execução com Docker Compose (Recomendado)
+### Execution with Docker Compose (Recommended)
 
 ```bash
 docker-compose up --build
 ```
 
-A aplicação estará disponível em `http://localhost:8000`.
+The application will be available at `http://localhost:8000`.
 
-### Execução Manual com Docker
+### Manual Execution with Docker
 
 ```bash
-# Build da imagem
+# Build the image
 docker build -t agent-swarm .
 
-# Execução
+# Execution
 docker run -p 8000:8000 \
-  -e GOOGLE_API_KEY=sua_chave \
+  -e GOOGLE_API_KEY=your_key \
   -v $(pwd)/src/data/vector_store:/app/src/data/vector_store \
   agent-swarm
 ```
 
-### Verificação de Saúde
+### Health Check
 
-Acesse `http://localhost:8000/health` para verificar se a aplicação está rodando.
+Access `http://localhost:8000/health` to verify the application is running.
 
-### Execução Local (Sem Docker)
+### Local Execution (Without Docker)
 
-Se preferir executar sem Docker, siga estes passos:
+If you prefer to run without Docker, follow these steps:
 
-1. **Instale as dependências**:
+1. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Configure o arquivo `.env`** como descrito na seção de configuração.
+2. **Configure the `.env` file** as described in the configuration section.
 
-3. **Execute a aplicação**:
+3. **Run the application**:
    ```bash
    python src/api/api.py
    ```
 
-A aplicação estará disponível em `http://localhost:8000`.
+The application will be available at `http://localhost:8000`.
 
 ### API Endpoints
 
-- `GET /health`: Verificação de saúde
-- `POST /chat`: Processamento de mensagens
-  - Body: `{"message": "Sua pergunta", "user_id": "id_usuario"}`
-  - Response: Detalhes da resposta do agente
+- `GET /health`: Health check
+- `POST /chat`: Message processing
+  - Body: `{"message": "Your question", "user_id": "user_id"}`
+  - Response: Agent response details
 
-## Pipeline RAG (Retrieval Augmented Generation)
+## RAG Pipeline (Retrieval Augmented Generation)
 
-### Ingestão de Dados
+### Data Ingestion
 
-- **Fonte**: Páginas web do InfinitePay (lista definida em `settings.py`)
-- **Extração**: Uso de `requests` e `BeautifulSoup` para scraping de texto
-- **Limpeza**: Remoção de scripts/estilos, caracteres não-ASCII, limite de tamanho
-- **Processamento**: Função `extract_content_from_url()` em `populate_kb.py`
+- **Source**: InfinitePay web pages (list defined in `settings.py`)
+- **Extraction**: Use of `requests` and `BeautifulSoup` for text scraping
+- **Cleaning**: Removal of scripts/styles, non-ASCII characters, size limit
+- **Processing**: `extract_content_from_url()` function in `populate_kb.py`
 
-### Armazenamento
+### Storage
 
-- **Vector Store**: ChromaDB local persistente
-- **Embedder**: SentenceTransformer para conversão de texto em vetores
-- **Configuração**: Coleção "infinitepay_kb", path configurável via settings
+- **Vector Store**: Local persistent ChromaDB
+- **Embedder**: SentenceTransformer for text-to-vector conversion
+- **Configuration**: "infinitepay_kb" collection, path configurable via settings
 
-### Recuperação
+### Retrieval
 
-- **Busca**: Similaridade vetorial baseada na query do usuário
-- **Contexto**: Top-k documentos relevantes recuperados
-- **Integração**: Agno Knowledge integra automaticamente com agentes
+- **Search**: Vector similarity based on user query
+- **Context**: Top-k relevant documents retrieved
+- **Integration**: Agno Knowledge integrates automatically with agents
 
-### Geração
+### Generation
 
-- **Modelo**: Google Gemini via Agno
-- **Prompt**: Contexto RAG + instruções do agente
-- **Resposta**: Geração fundamentada em dados recuperados
+- **Model**: Google Gemini via Agno
+- **Prompt**: RAG context + agent instructions
+- **Response**: Generation grounded in retrieved data
 
+### Tests
 
-### Testes 
-
-``
+```
 pip install -r requirements.txt
-``
+```
 
-Os testes incluem:
-- `test_agents.py`: Testes dos agentes individuais
-- `test_customer_support.py`: Testes específicos do suporte ao cliente
+The tests include:
+- `test_agents.py`: Individual agent tests
+- `test_customer_support.py`: Specific customer support tests
 
-### Cenários de Teste
+### Test Scenarios
 
-Exemplos de mensagens para testar:
-- "Qual o valor da maquininha Smart?" (Knowledge Agent)
-- "Não consigo fazer transferências" (Customer Support Agent)
-- "Qual o placar do último jogo do Palmeiras?" (Web Search via Knowledge Agent)
+Example messages to test:
+- "What is the value of the Smart machine?" (Knowledge Agent)
+- "I can't make transfers" (Customer Support Agent)
+- "What was the last Palmeiras game score?" (Web Search via Knowledge Agent)
 
-## Como Aproveitamos as Ferramentas de LLM
+## How We Leveraged LLM Tools
 
-### Framework Agno
+### Agno Framework
 
-- **Agentes**: Criação simplificada de agentes com roles e instruções
-- **Integrações**: Suporte nativo a Google Gemini, ChromaDB, SQLite
-- **Ferramentas**: Sistema de tools para agentes (ex: consultas DB)
-- **Memória**: Gerenciamento automático de contexto de conversa
+- **Agents**: Simplified creation of agents with roles and instructions
+- **Integrations**: Native support for Google Gemini, ChromaDB, SQLite
+- **Tools**: Tool system for agents (e.g., DB queries)
+- **Memory**: Automatic conversation context management
 
-### Modelos LLM
+### LLM Models
 
-- **Google Gemini**: Modelos gratuitos para geração de texto
-- **Configuração**: Via settings, com controle de tokens e temperatura
-- **Uso**: Tanto para roteamento quanto para geração de respostas
+- **Google Gemini**: Free models for text generation
+- **Configuration**: Via settings, with token and temperature control
+- **Usage**: For both routing and response generation
 
-### Técnicas
+### Techniques
 
-- **RAG**: Combinação de busca vetorial + geração para respostas precisas
-- **Prompt Engineering**: Instruções específicas por agente em português
-- **Multi-agent**: Coordenação entre agentes especializados
+- **RAG**: Combination of vector search + generation for accurate responses
+- **Prompt Engineering**: Specific instructions per agent in Portuguese
+- **Multi-agent**: Coordination between specialized agents
 
-## Desenvolvimento
+## Development
 
-### Estrutura do Projeto
+### Project Structure
 
 ```
 AgentsSwarm/
 ├── src/
-│   ├── agents/          # Definição dos agentes
-│   ├── api/            # API FastAPI
-│   ├── config/         # Configurações e setup DB
-│   ├── data/           # Base de conhecimento e população
-│   └── tools/          # Ferramentas customizadas
-├── tests/              # Testes unitários
-├── Dockerfile          # Containerização
-├── docker-compose.yml  # Orquestração
-└── requirements.txt    # Dependências Python
+│   ├── agents/          # Agent definitions
+│   ├── api/            # FastAPI
+│   ├── config/         # Configurations and DB setup
+│   ├── data/           # Knowledge base and population
+│   └── tools/          # Custom tools
+├── tests/              # Unit tests
+├── Dockerfile          # Containerization
+├── docker-compose.yml  # Orchestration
+└── requirements.txt    # Python dependencies
 ```
 
-### Próximos Passos
+### Next Steps
 
-- guardrails para segurança
-- mais agentes (ex: Slack Agent)
-- testes 
+- guardrails for security
+- more agents (e.g., Slack Agent)
+- tests 
 
 
