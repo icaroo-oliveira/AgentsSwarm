@@ -11,7 +11,7 @@ import os
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
-from src.agents.agno_team import router_team
+from src.agents.router_team import router_team
 from src.config.logging_config import setup_logging, get_logger
 from src.config.settings import settings
 
