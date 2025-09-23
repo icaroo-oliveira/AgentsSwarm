@@ -12,11 +12,14 @@ class Settings(BaseSettings):
     # Hugging Face Configuration (gratuito!)
     huggingfacehub_api_token: str = Field(..., env="HF_TOKEN")
     
-    # Model Configuration - Modelos gratuitos Hugging Face
-    router_model: str = Field(default="meta-llama/Llama-3.1-70B-Instruct", env="MODEL")
-    knowledge_model: str = Field(default="meta-llama/Llama-3.1-70B-Instruct", env="MODEL")
-    support_model: str = Field(default="meta-llama/Llama-3.1-70B-Instruct", env="MODEL")
-    custom_model: str = Field(default="meta-llama/Llama-3.1-70B-Instruct", env="MODEL")
+    # Google Gemini Configuration (gratuito!)
+    google_api_key: str = Field(default="", env="GOOGLE_API_KEY")
+    
+    # Model Configuration - Modelos gratuitos Google Gemini
+    router_model: str = Field(default="gemini-2.0-flash", env="MODEL")
+    knowledge_model: str = Field(default="gemini-2.0-flash", env="MODEL")
+    support_model: str = Field(default="gemini-2.0-flash", env="MODEL")
+    custom_model: str = Field(default="gemini-2.0-flash", env="MODEL")
 
     # Vector Store Configuration
     vector_store_path: str = Field(default="./src/data/vector_store", env="VECTOR_STORE_PATH")

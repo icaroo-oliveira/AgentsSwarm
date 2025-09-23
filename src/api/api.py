@@ -109,7 +109,6 @@ async def chat(request: ChatRequest):
             timestamp="2024-01-01T00:00:00Z",
             user_id=request.user_id
         )
-        
         logger.info(f"Resposta do Team: {team_response.content}...")
         return response
         

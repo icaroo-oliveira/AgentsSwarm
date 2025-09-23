@@ -1,6 +1,15 @@
 import asyncio
 import requests
 from bs4 import BeautifulSoup
+
+import os
+import sys
+
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+
 from src.data.knowledge_base import knowledge_base
 
 # Lista de URLs do InfinitePay para extrair conteúdo
