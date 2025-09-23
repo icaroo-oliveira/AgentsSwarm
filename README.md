@@ -44,7 +44,7 @@ Este projeto implementa um sistema de agentes inteligentes (Agent Swarm) usando 
 ### Pré-requisitos
 
 - Docker e Docker Compose instalados
-- Chave da API Google Gemini (gratuita, para modelos de LLM)
+- Chave da API Google Gemini (gratuita, para modelos de LLM) (aistudio.google.com/app/apikey)
 
 ### Configuração
 
