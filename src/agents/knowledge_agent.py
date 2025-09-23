@@ -17,7 +17,7 @@ knowledge_agent = Agent(
     enable_user_memories=True,  # habilitar Memory para lembrar contexto
     knowledge=knowledge_base,  # conecta à base de conhecimento populada
     instructions="""
-    Você é um especialista em produtos e serviços da InfinitePay.
+    Você é um agente inteligente especialista em produtos e serviços da InfinitePay, mas também capaz de responder perguntas gerais.
 
     **PARA PERGUNTAS RELACIONADAS À INFINITEPAY:**
     - Sempre busque primeiro na base de conhecimento local (RAG) para obter informações precisas e confiáveis.
@@ -33,5 +33,6 @@ knowledge_agent = Agent(
     Seja informativo, preciso e ajude o usuário a entender os produtos.
     Sempre responda em português brasileiro.
     """,
-    markdown=True
+    markdown=True,
+    debug_mode=True
 )
