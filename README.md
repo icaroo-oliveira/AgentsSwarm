@@ -90,7 +90,7 @@ docker build -t agent-swarm .
 
 # Execução
 docker run -p 8000:8000 \
-  -e HUGGINGFACEHUB_API_TOKEN=seu_token \
+  -e GOOGLE_API_KEY=sua_chave \
   -v $(pwd)/src/data/vector_store:/app/src/data/vector_store \
   agent-swarm
 ```
@@ -98,6 +98,24 @@ docker run -p 8000:8000 \
 ### Verificação de Saúde
 
 Acesse `http://localhost:8000/health` para verificar se a aplicação está rodando.
+
+### Execução Local (Sem Docker)
+
+Se preferir executar sem Docker, siga estes passos:
+
+1. **Instale as dependências**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Configure o arquivo `.env`** como descrito na seção de configuração.
+
+3. **Execute a aplicação**:
+   ```bash
+   python src/api/api.py
+   ```
+
+A aplicação estará disponível em `http://localhost:8000`.
 
 ### API Endpoints
 
@@ -129,7 +147,7 @@ Acesse `http://localhost:8000/health` para verificar se a aplicação está roda
 
 ### Geração
 
-- **Modelo**: HuggingFace models via Agno
+- **Modelo**: Google Gemini via Agno
 - **Prompt**: Contexto RAG + instruções do agente
 - **Resposta**: Geração fundamentada em dados recuperados
 
