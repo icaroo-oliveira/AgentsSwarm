@@ -68,6 +68,12 @@ Este projeto implementa um sistema de agentes inteligentes (Agent Swarm) usando 
    python src/data/populate_kb.py
    ```
 
+4. **Configure o banco de dados de usuários** (para Customer Support Agent):
+   O script `src/config/setup_db.py` cria tabelas e insere dados mockados automaticamente ao iniciar a aplicação. Se quiser executar manualmente:
+   ```bash
+   python -c "from src.config.setup_db import setup_mock_data; setup_mock_data()"
+   ```
+
 ### Execução com Docker Compose (Recomendado)
 
 ```bash

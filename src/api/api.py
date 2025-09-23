@@ -96,7 +96,7 @@ async def chat(request: ChatRequest):
             raise HTTPException(status_code=500, detail="Router team não inicializado")
 
         # Processa mensagem pelo router team
-        team_response = await router_team.arun(input=request.message)
+        team_response = await router_team.arun(input=f"User ID: {request.user_id}. Message: {request.message}")
         response = ChatResponse(
             success=True,
             response=team_response.content,
