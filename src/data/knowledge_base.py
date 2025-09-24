@@ -7,7 +7,7 @@ from agno.knowledge.reader.website_reader import WebsiteReader
 from src.config.settings import settings
 
 # Configurar o Embedder (SentenceTransformer para eficiência)
-embedder = SentenceTransformerEmbedder()
+embedder = SentenceTransformerEmbedder(id="sentence-transformers/all-MiniLM-L6-v2")
 
 # Configurar o Vector DB (ChromaDB local)
 vector_db = ChromaDb(
