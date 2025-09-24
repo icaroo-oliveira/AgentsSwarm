@@ -47,9 +47,7 @@ class ChatResponse(BaseModel):
     success: bool
     response: str
     agent_used: str
-    confidence: float
     metadata: Dict[str, Any]
-    timestamp: str
     user_id: str
 
 router_agent = None
@@ -101,12 +99,7 @@ async def chat(request: ChatRequest):
             success=True,
             response=team_response.content,
             agent_used="router_team",
-            confidence=0.9,  
-            metadata={
-                "team_response": team_response.content,
-                "original_message": request.message
-            },
-            timestamp="2024-01-01T00:00:00Z",
+            metadata={"team_response": team_response.content, "original_message": request.message},
             user_id=request.user_id
         )
         logger.info(f"Resposta do Team: {team_response.content}...")

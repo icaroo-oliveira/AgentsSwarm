@@ -32,7 +32,7 @@ router_team = Team(
     Sempre responda em português brasileiro.
     Se delegar, explique brevemente por quê.
     """,
-    respond_directly=False,  # Permite que o Team processe a delegação completa
+    respond_directly=True,  
     show_members_responses=True,  # Mostra respostas dos membros
     markdown=True,
 )
