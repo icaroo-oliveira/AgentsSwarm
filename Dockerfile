@@ -20,6 +20,10 @@ RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 # Copiar código da aplicação
 COPY . .
 
+# Executar setup do banco e população da base de conhecimento durante o build
+RUN python -c "from src.config.setup_db import setup_mock_data; setup_mock_data()" && \
+    python -c "import asyncio; from src.data.populate_kb import populate_knowledge_base; asyncio.run(populate_knowledge_base())"
+
 # Expor porta
 EXPOSE 8000
 
