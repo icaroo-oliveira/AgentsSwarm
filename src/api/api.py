@@ -14,6 +14,8 @@ sys.path.insert(0, project_root)
 from src.agents.router_team import router_team
 from src.config.logging_config import setup_logging, get_logger
 from src.config.settings import settings
+from src.config.setup_db import setup_mock_data
+from src.data.populate_kb import populate_knowledge_base
 
 
 setup_logging()
@@ -60,6 +62,23 @@ async def startup_event():
     try:
         logger.info("Inicializando Agent Swarm com Agno...")
         logger.info(f"Servidor: http://{settings.api_host}:{settings.api_port}")
+        
+        # Verificar e configurar banco de dados se necessário
+        db_path = "memory.db"
+        if not os.path.exists(db_path):
+            logger.info("Banco de dados não encontrado, configurando dados mock...")
+            setup_mock_data()
+            logger.info("Banco de dados configurado com sucesso!")
+        else:
+            logger.info("Banco de dados já existe, pulando configuração.")
+        
+        # Verificar e popular base de conhecimento se necessário
+        if not os.path.exists(settings.vector_store_path):
+            logger.info("Base de conhecimento não encontrada, populando...")
+            await populate_knowledge_base()
+            logger.info("Base de conhecimento populada com sucesso!")
+        else:
+            logger.info("Base de conhecimento já existe, pulando população.")
         
         #inicialzia router agent
         router_agent = router_team
