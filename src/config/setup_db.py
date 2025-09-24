@@ -52,5 +52,5 @@ def setup_mock_data():
     conn.commit()
     conn.close()
 
-# Executar setup das tabelas mockadas
-setup_mock_data()
+# # Executar setup das tabelas mockadas
+# setup_mock_data()

@@ -85,5 +85,5 @@ async def populate_knowledge_base():
 
     print("População da base de conhecimento concluída!")
 
-if __name__ == "__main__":
-    asyncio.run(populate_knowledge_base())
+# if __name__ == "__main__":
+#     asyncio.run(populate_knowledge_base())

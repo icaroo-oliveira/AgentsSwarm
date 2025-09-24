@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     support_model: str = Field(default="gemini-2.0-flash", env="MODEL")
     custom_model: str = Field(default="gemini-2.0-flash", env="MODEL")
 
+    # Embedder Configuration
+    embedder_model: str = Field(default="sentence-transformers/all-MiniLM-L6-v2", env="EMBEDDER_MODEL")
+
     # Vector Store Configuration
     vector_store_path: str = Field(default="./src/data/vector_store", env="VECTOR_STORE_PATH")
     chunk_size: int = Field(default=1000, env="CHUNK_SIZE")
