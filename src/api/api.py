@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional
 import logging
 import sys
 import os
-
+from src.agents.guardrail import guardrail_agent
 # Add project root to Python path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
@@ -111,7 +111,15 @@ async def chat(request: ChatRequest):
     try:
         if not router_team:
             raise HTTPException(status_code=500, detail="Router team não inicializado")
+        
 
+        #guardrail check
+        guardrail_check = await guardrail_agent.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
+        print(guardrail_check)
+        if guardrail_check.content.there_is_id_conflict or guardrail_check.content.suspicious_activity:
+            logger.warning(f"Mensagem bloqueada: {guardrail_check.content.reason}")
+            raise HTTPException(status_code=403, detail=f"Mensagem bloqueada pelo Guardrail Agent: {guardrail_check.content.reason}")
+        
         # Processa mensagem pelo router team
         team_response = await router_team.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
         response = ChatResponse(
