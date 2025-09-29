@@ -22,14 +22,22 @@ This project implements an intelligent agent system (Agent Swarm) using the Agno
    - **Function**: Provides customer support by retrieving specific user data.
    - **Tools**: Two implemented tools to query user profile and transactions.
    - **Database**: SQLite with mocked data for simulation.
+   - **Security**: Tools include defenses to prevent access to other users' data via prompt injection, using ContextVar for request isolation.
+
+4. **Guardrail Agent**
+   - **Function**: Security layer that validates messages before processing.
+   - **Responsibilities**: Checks for user ID conflicts (e.g., attempts to access other users' data) and suspicious activities (e.g., prohibited requests or jailbreaks).
+   - **Technology**: Uses LLM to analyze message content and return structured validation (JSON with conflict flags, severity, and reason).
+   - **Integration**: Runs before routing, blocking invalid requests with HTTP 403.
 
 ### Message Processing Flow
 
 1. **Reception**: API receives POST to `/chat` with JSON containing `message` and `user_id`.
-2. **Routing**: Router Agent analyzes the message and selects the appropriate agent.
-3. **Processing**: Selected agent executes its logic (RAG, DB queries, etc.).
-4. **Response**: System returns JSON with response, used agent, confidence, and metadata.
-5. **Memory**: Conversation data is stored for future context.
+2. **Guardrail Check**: Guardrail Agent validates the message for security (ID conflicts, suspicious activities).
+3. **Routing**: Router Agent analyzes the message and selects the appropriate agent.
+4. **Processing**: Selected agent executes its logic (RAG, DB queries, etc.).
+5. **Response**: System returns JSON with response, used agent, confidence, and metadata.
+6. **Memory**: Conversation data is stored for future context.
 
 ### Design Choices
 
@@ -209,7 +217,6 @@ AgentsSwarm/
 
 ### Next Steps
 
-- guardrails for security
 - more agents (e.g., Slack Agent)
 - tests 
 
