@@ -6,14 +6,16 @@ from typing import Dict, Any, Optional
 import logging
 import sys
 import os
-
+from src.agents.guardrail import guardrail_agent
 # Add project root to Python path
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from src.agents.router_team import router_team
+from src.tools.customer_support_tools import CURRENT_API_USER_ID
 from src.config.logging_config import setup_logging, get_logger
 from src.config.settings import settings
+from src.utils.guardrail_utils import validate_guardrail_response
 
 
 setup_logging()
@@ -111,9 +113,23 @@ async def chat(request: ChatRequest):
     try:
         if not router_team:
             raise HTTPException(status_code=500, detail="Router team não inicializado")
+        
+        # salva o id numa variavel de contexto
+        token = CURRENT_API_USER_ID.set(request.user_id)
+        try:
+            # guardrail check (LLM)
+            guardrail_check = await guardrail_agent.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
 
-        # Processa mensagem pelo router team
-        team_response = await router_team.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
+            # validação da resposta do guardrail
+            validate_guardrail_response(guardrail_check)
+
+            # processa mensagem pelo router team
+            team_response = await router_team.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
+        finally:
+            try:
+                CURRENT_API_USER_ID.reset(token)
+            except Exception:
+                pass
         response = ChatResponse(
             success=True,
             response=team_response.content,
@@ -124,6 +140,8 @@ async def chat(request: ChatRequest):
         logger.info(f"Resposta do Team: {team_response.content}...")
         return response
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Erro ao processar mensagem: {e}")
         raise HTTPException(

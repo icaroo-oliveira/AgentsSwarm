@@ -16,10 +16,11 @@ class Settings(BaseSettings):
     google_api_key: str = Field(default="", env="GOOGLE_API_KEY")
     
     # Model Configuration - Modelos gratuitos Google Gemini
-    router_model: str = Field(default="gemini-2.0-flash", env="MODEL")
-    knowledge_model: str = Field(default="gemini-2.0-flash", env="MODEL")
-    support_model: str = Field(default="gemini-2.0-flash", env="MODEL")
-    custom_model: str = Field(default="gemini-2.0-flash", env="MODEL")
+    router_model: str = Field(default="gemini-2.5-flash", env="MODEL_ROUTER")
+    knowledge_model: str = Field(default="gemini-2.5-pro", env="MODEL_KNOWLEDGE")
+    support_model: str = Field(default="gemini-2.5-flash", env="MODEL_SUPPORT")
+    custom_model: str = Field(default="gemini-2.0-flash", env="MODEL_CUSTOM")
+    guardrail_model: str = Field(default="gemini-2.0-flash-lite", env="MODEL_GUARDRAIL")
 
     # Embedder Configuration
     embedder_model: str = Field(default="sentence-transformers/all-MiniLM-L6-v2", env="EMBEDDER_MODEL")
