@@ -15,7 +15,7 @@ This project implements an intelligent agent system (Agent Swarm) using the Agno
 
 2. **Knowledge Agent**
    - **Function**: Answers questions about InfinitePay products and services.
-   - **Technology**: Uses Retrieval Augmented Generation (RAG) for responses based on official website data.
+   - **Technology**: Uses Structured RAG (Retrieval Augmented Generation) with structural chunking for responses based on official website data.
    - **Tools**: Web search for general questions, RAG for specific knowledge.
 
 3. **Customer Support Agent**
@@ -43,7 +43,7 @@ This project implements an intelligent agent system (Agent Swarm) using the Agno
 
 - **Agno Framework**: Chosen for simplicity in creating agents and LLM integrations.
 - **FastAPI**: For fast, automatically documented REST API.
-- **ChromaDB**: Lightweight and efficient vector store for RAG.
+- **ChromaDB**: Vector store for RAG, running as a Docker service.
 - **Docker**: Containerization for portability and isolation.
 - **SQLite**: Simple database for mocked user data.
 
@@ -66,10 +66,12 @@ This project implements an intelligent agent system (Agent Swarm) using the Agno
    Create a `.env` file in the project root:
    ```
    GOOGLE_API_KEY=your_key_here
+   MODEL=gemini-2.5-flash
+   EMBEDDER_MODEL=gemini-embedding-001
+   CHROMA_HOST=localhost
+   CHROMA_PORT=8001
    LOG_LEVEL=INFO
    ```
-   **Expose the environment variable**
-   setx GOOGLE_API_KEY your_key_here
 
 3. **Populate the knowledge base** (for Knowledge Agent):
    ```bash
@@ -99,7 +101,6 @@ docker build -t agent-swarm .
 # Execution
 docker run -p 8000:8000 \
   -e GOOGLE_API_KEY=your_key \
-  -v $(pwd)/src/data/vector_store:/app/src/data/vector_store \
   agent-swarm
 ```
 
@@ -134,23 +135,33 @@ The application will be available at `http://localhost:8000`.
 
 ## RAG Pipeline (Retrieval Augmented Generation)
 
+We use **Structured RAG** — a chunking strategy that preserves the semantic structure of the source pages instead of splitting text into fixed-size fragments.
+
+### Why Structured RAG?
+
+The InfinitePay pages are marketing landing pages with clear HTML hierarchy (H1, H2, H3, FAQs). Fixed-size chunking would break sections in the middle, mixing unrelated topics in the same chunk and losing context. Structural chunking keeps each section as a self-contained unit, preserving its meaning and hierarchy. This results in more relevant retrieval and better-grounded responses.
+
 ### Data Ingestion
 
-- **Source**: InfinitePay web pages (list defined in `settings.py`)
-- **Extraction**: Use of `requests` and `BeautifulSoup` for text scraping
-- **Cleaning**: Removal of scripts/styles, non-ASCII characters, size limit
-- **Processing**: `extract_content_from_url()` function in `populate_kb.py`
+- **Source**: 18 InfinitePay web pages (URLs defined in `settings.py`)
+- **Extraction**: `requests` + `BeautifulSoup` for HTML scraping
+- **Structural Chunking**: Content is split into three chunk types:
+  - **Hero**: H1 + introductory paragraph (page overview)
+  - **Section**: H2 + associated body content (product features, benefits)
+  - **FAQ**: H3 ending in `?` + answer text (common questions)
+- **Metadata**: Each chunk carries `url`, `product`, `section_type`, and `heading`
+- **Processing**: `extract_structural_chunks()` in `populate_kb.py`
 
 ### Storage
 
-- **Vector Store**: Local persistent ChromaDB
-- **Embedder**: SentenceTransformer for text-to-vector conversion
-- **Configuration**: "infinitepay_kb" collection, path configurable via settings
+- **Vector Store**: ChromaDB running as a Docker service (port 8001)
+- **Embedder**: GeminiEmbedder (`gemini-embedding-001`, 768 dimensions)
+- **Collection**: `infinitepay_kb`
 
 ### Retrieval
 
 - **Search**: Vector similarity based on user query
-- **Context**: Top-k relevant documents retrieved
+- **Context**: Top-k relevant documents retrieved with metadata
 - **Integration**: Agno Knowledge integrates automatically with agents
 
 ### Generation
