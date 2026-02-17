@@ -10,7 +10,8 @@ knowledge_agent = Agent(
     name="Knowledge Agent",
     role="Especialista em produtos e serviços da InfinitePay",
     model=Gemini(
-        id=settings.router_model,
+        id=settings.knowledge_model,
+        api_key=settings.google_api_key,
     ),
     tools=[DuckDuckGoTools()],
     db=db,  # adicionar banco para Memory

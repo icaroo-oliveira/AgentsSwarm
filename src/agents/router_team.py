@@ -9,7 +9,8 @@ from .knowledge_agent import knowledge_agent
 router_team = Team(
     name="Router Team",
     model=Gemini(
-        id=settings.router_model,  
+        id=settings.router_model,
+        api_key=settings.google_api_key,
     ),
     db=db,  #adicionar banco para Memory compartilhada
     enable_user_memories=True,  #habilitar Memory para o Team

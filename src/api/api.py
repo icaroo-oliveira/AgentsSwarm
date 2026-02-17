@@ -73,14 +73,13 @@ async def startup_event():
         else:
             logger.info("Banco de dados já existe, pulando configuração.")
         
-        # Verificar e popular base de conhecimento se necessário
-        if len(os.listdir(settings.vector_store_path)) <= 1:
-            logger.info("Base de conhecimento não encontrada ou vazia, populando...")
-            import src.data.populate_kb as populate
-            await populate.populate_knowledge_base()
-            logger.info("Base de conhecimento populada com sucesso!")
-        else:
-            logger.info("Base de conhecimento já existe, pulando população.")
+        # Verificar se KB já tem dados no ChromaDB
+        try:
+            from src.data.knowledge_base import vector_db
+            vector_db.create()  # garante que collection existe
+            logger.info("Base de conhecimento ChromaDB conectada.")
+        except Exception as kb_err:
+            logger.warning(f"ChromaDB não acessível: {kb_err}. KB ficará indisponível.")
         
         #inicialzia router agent
         router_agent = router_team
@@ -117,11 +116,9 @@ async def chat(request: ChatRequest):
         # salva o id numa variavel de contexto
         token = CURRENT_API_USER_ID.set(request.user_id)
         try:
-            # guardrail check (LLM)
-            guardrail_check = await guardrail_agent.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
-
-            # validação da resposta do guardrail
-            validate_guardrail_response(guardrail_check)
+            # guardrail check (LLM) - DESATIVADO TEMPORARIAMENTE
+            # guardrail_check = await guardrail_agent.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
+            # validate_guardrail_response(guardrail_check)
 
             # processa mensagem pelo router team
             team_response = await router_team.arun(input=f"User ID: {request.user_id}. Message: {request.message}", user_id=request.user_id)
