@@ -16,6 +16,7 @@ guardrail_agent = Agent(
     role="Agente de segurança e moderação da InfinitePay",
     model=Gemini(
         id=settings.guardrail_model,
+        api_key=settings.google_api_key,
     ),
     # use_json_mode=True, ativar se o modelo não suportar saída estruturada nativamente
     instructions="""

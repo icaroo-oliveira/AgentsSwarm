@@ -55,3 +55,6 @@ Thumbs.db
 *.tmp
 *.temp
 .github/
+context
+memory.db
+src/data/vector_store/

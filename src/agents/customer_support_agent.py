@@ -9,7 +9,8 @@ customer_support_agent = Agent(
     name="Customer Support Agent",
     role="Agente de suporte ao cliente da InfinitePay",
     model=Gemini(
-        id=settings.router_model,  
+        id=settings.router_model,
+        api_key=settings.google_api_key,
     ),
     db=db,  # Adicionar banco para Memory
     enable_user_memories=True,  # Habilitar Memory para lembrar informações do usuário

@@ -1,17 +1,37 @@
 version: '3.8'
 
 services:
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - ANONYMIZED_TELEMETRY=False
+      - IS_PERSISTENT=TRUE
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
   agent-swarm:
     build: .
     ports:
       - "8000:8000"
+    depends_on:
+      chromadb:
+        condition: service_healthy
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - API_HOST=0.0.0.0
       - API_PORT=8000
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
     volumes:
-      - ./src/data/vector_store:/app/src/data/vector_store
       - ./logs:/app/logs
     restart: unless-stopped
     healthcheck:
@@ -21,5 +41,5 @@ services:
       retries: 3
 
 volumes:
-  vector_store:
+  chroma_data:
   logs:

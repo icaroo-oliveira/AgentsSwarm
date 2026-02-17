@@ -17,18 +17,17 @@ class Settings(BaseSettings):
     
     # Model Configuration - Modelos gratuitos Google Gemini
     router_model: str = Field(default="gemini-2.5-flash", env="MODEL_ROUTER")
-    knowledge_model: str = Field(default="gemini-2.5-pro", env="MODEL_KNOWLEDGE")
+    knowledge_model: str = Field(default="gemini-2.5-flash", env="MODEL_KNOWLEDGE")
     support_model: str = Field(default="gemini-2.5-flash", env="MODEL_SUPPORT")
     custom_model: str = Field(default="gemini-2.0-flash", env="MODEL_CUSTOM")
-    guardrail_model: str = Field(default="gemini-2.0-flash-lite", env="MODEL_GUARDRAIL")
+    guardrail_model: str = Field(default="gemini-2.5-flash", env="MODEL_GUARDRAIL")
 
-    # Embedder Configuration
-    embedder_model: str = Field(default="sentence-transformers/all-MiniLM-L6-v2", env="EMBEDDER_MODEL")
+    # Embedder Configuration (Google gemini-embedding-001 via API key gratuita)
+    embedder_model: str = Field(default="gemini-embedding-001", env="EMBEDDER_MODEL")
 
-    # Vector Store Configuration
-    vector_store_path: str = Field(default="./src/data/vector_store", env="VECTOR_STORE_PATH")
-    chunk_size: int = Field(default=1000, env="CHUNK_SIZE")
-    chunk_overlap: int = Field(default=200, env="CHUNK_OVERLAP")
+    # ChromaDB Configuration (Docker container)
+    chroma_host: str = Field(default="localhost", env="CHROMA_HOST")
+    chroma_port: int = Field(default=8001, env="CHROMA_PORT")
     
     # API Configuration
     api_host: str = Field(default="0.0.0.0", env="API_HOST")
